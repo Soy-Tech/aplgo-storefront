@@ -3,48 +3,12 @@
 import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import { useCart } from "@/lib/cart/context"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
-
-const MEDUSA_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000"
-const PUB_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ?? ""
-
-async function createMedusaCart(
-  items: { variant_id: string; quantity: number }[]
-): Promise<string> {
-  const res = await fetch(`${MEDUSA_URL}/store/carts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-publishable-api-key": PUB_KEY,
-    },
-    body: JSON.stringify({ items }),
-  })
-  if (!res.ok) throw new Error("No se pudo crear el carrito en Medusa")
-  const { cart } = await res.json()
-  return cart.id as string
-}
+import { PayPalButton } from "@/components/checkout/PayPalButton"
 
 export default function CarritoPage() {
   const { items, count, total, removeItem, updateQty, clearCart } = useCart()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  async function handleCheckout() {
-    setLoading(true)
-    setError(null)
-    try {
-      const cartId = await createMedusaCart(
-        items.map((i) => ({ variant_id: i.variantId, quantity: i.quantity }))
-      )
-      localStorage.setItem("medusa_cart_id", cartId)
-      router.push(`/checkout?cart_id=${cartId}`)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error al procesar")
-      setLoading(false)
-    }
-  }
 
   if (count === 0) {
     return (
@@ -172,13 +136,16 @@ export default function CarritoPage() {
               <p className="mt-3 text-xs text-destructive">{error}</p>
             )}
 
-            <button
-              onClick={handleCheckout}
-              disabled={loading}
-              className="mt-4 w-full inline-flex h-11 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
-            >
-              {loading ? "Procesando…" : "Proceder al pago"}
-            </button>
+            <PayPalButton
+              items={items.map((i) => ({
+                variantId: i.variantId,
+                title: i.title,
+                priceUsd: i.priceUsd,
+                quantity: i.quantity,
+              }))}
+              totalUsd={total}
+              onError={(msg) => setError(msg ?? null)}
+            />
 
             <Link
               href="/catalogo"
