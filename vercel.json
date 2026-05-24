@@ -2,5 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "bun run build",
   "installCommand": "bun install",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "ignoreCommand": "git diff HEAD~1 --name-only | grep -qE '^(src/|next\\.config|package\\.json|vercel\\.json|public/)' || exit 0"
 }
