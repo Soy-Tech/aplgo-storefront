@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: "Accede a tu cuenta APL Go.",
 }
 
+console.log("Variables", process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY, process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL)
 export default function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16">
