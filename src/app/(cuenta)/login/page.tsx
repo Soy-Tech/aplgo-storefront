@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 py-16">
-      { console.log("KEY:", process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY, process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL)}
       <div className="w-full max-w-sm">
         {/* Logo mark */}
         <div className="mb-8 flex flex-col items-center gap-2 text-center">
