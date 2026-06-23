@@ -47,12 +47,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group flex flex-col rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
-      {/* Placeholder image area */}
-      <div className="relative flex h-44 items-center justify-center overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/5 via-background to-secondary/8">
-        <div className="flex flex-col items-center gap-1.5 opacity-25 text-primary">
-          <LeafIcon />
-          <span className="text-[10px] font-semibold uppercase tracking-widest">APL Go</span>
-        </div>
+      {/* Product image */}
+      <div className="relative h-44 overflow-hidden rounded-t-lg bg-gradient-to-br from-primary/5 via-background to-secondary/8">
+        {product.thumbnail ? (
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center gap-1.5 opacity-25 text-primary">
+            <LeafIcon />
+            <span className="text-[10px] font-semibold uppercase tracking-widest">APL Go</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
