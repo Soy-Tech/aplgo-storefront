@@ -12,8 +12,8 @@ export async function getProduct(handle: string) {
 
 export async function listProducts(collectionId?: string) {
   const query = collectionId
-    ? { collection_id: [collectionId], fields: "*variants,*variants.prices,*collection,+metadata" }
-    : { fields: "*variants,*variants.prices,*collection,+metadata" }
+    ? { collection_id: [collectionId], fields: "*variants,*variants.prices,*collection,+metadata,+thumbnail,+images" }
+    : { fields: "*variants,*variants.prices,*collection,+metadata,+thumbnail,+images" }
 
   const { products } = await medusa.store.product.list(query as Parameters<typeof medusa.store.product.list>[0])
   return products
