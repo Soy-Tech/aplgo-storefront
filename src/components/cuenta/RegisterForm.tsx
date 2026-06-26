@@ -23,25 +23,34 @@ export function RegisterForm() {
     setError("")
 
     try {
-      // 1. Register the customer account
-      await medusa.auth.register("customer", "emailpass", {
+      // 1. Create auth identity — returns a one-time registration token
+      const token = await medusa.auth.register("customer", "emailpass", {
         email,
         password,
       })
 
-      // 2. Log them in immediately
-      await medusa.auth.login("customer", "emailpass", { email, password })
+      // 2. Create the customer profile using the registration token
+      await medusa.store.customer.create(
+        { email, first_name: firstName, last_name: lastName },
+        {},
+        { Authorization: `Bearer ${token}` }
+      )
 
-      // 3. Update the customer profile with name
-      await medusa.store.customer.update({ first_name: firstName, last_name: lastName })
+      // 3. Log in to start a session
+      await medusa.auth.login("customer", "emailpass", { email, password })
 
       router.push("/mi-cuenta")
       router.refresh()
     } catch (err: unknown) {
       const raw = err instanceof Error ? err.message : String(err)
-      const msg = raw.toLowerCase().includes("exists")
+      const lower = raw.toLowerCase()
+      const msg = lower.includes("exists") || lower.includes("already")
         ? "Ya existe una cuenta con ese correo. ¿Quieres ingresar?"
-        : raw
+        : lower.includes("unauthorized") || lower.includes("401")
+        ? "No se pudo crear la cuenta. Verifica tus datos e intenta de nuevo."
+        : lower.includes("password")
+        ? "La contraseña no cumple los requisitos mínimos."
+        : "Hubo un problema al crear tu cuenta. Intenta de nuevo."
       setError(msg)
       setStatus("error")
     }
